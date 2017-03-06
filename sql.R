@@ -1,0 +1,20 @@
+install.packages("RMySQL")
+library(RMySQL)
+acsucb = dbConnect(MySQL(), user = "genome", host = "genome-mysql.cse.ucsc.edu")
+result = dbGetQuery(ucb,"show databases;"); dbDisconnect(ucb);
+result
+hg19 = dbConnect(MySQL(), user = "genome", db = "hg19", host = "genome-mysql.cse.ucsc.edu")
+alltables = dbListTables(hg19)
+length(alltables)
+alltables[1:5]
+result2 = dbGetQuery(hg19, "show databases;")
+nrow(result2)
+dbListFields(hg19, "affyU133Plus2")
+dbGetQuery(hg19, "select count(*) from affyU133Plus2")
+affyData = dbReadTable(hg19, "affyU133Plus2")
+head(affyData)
+subaffyData = dbSendQuery(hg19, "select * from affyU133Plus2 where misMatches between 1 and 3")
+affyMis = fetch(subaffyData); quantile(affyMis$misMatches)
+affyMissmall = fetch(subaffyData, n=10) ; dbClearResult(subaffyData)
+dim(affyMissmall)
+dbDisconnect(hg19)
